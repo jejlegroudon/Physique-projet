@@ -1,0 +1,37 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import eigh
+
+hbar = 1
+m = 1
+dx = 0.01
+x = np.arange(-1, 1, dx)
+N = len(x)
+dx2 = dx**2
+hbar2 = hbar**2
+
+V0 = 50
+a = 0.5
+V = np.zeros(N)
+V[np.abs(x) < a] = -V0
+
+diag = -2.0 * np.ones(N)
+off_diag = np.ones(N - 1)
+D = (np.diag(diag) + np.diag(off_diag, 1) + np.diag(off_diag, -1)) / dx2
+
+H = -(hbar2 / (2 * m)) * D + np.diag(V)
+
+energies, states = eigh(H)
+
+plt.figure()
+for n in range(3):
+    psi = states[:, n]
+    psi = psi / np.sqrt(np.trapz(psi**2, x))
+    plt.plot(x, psi + energies[n], label=f'n={n}, E={energies[n]:.2f}')
+plt.plot(x, V, 'k--', label="Potentiel")
+plt.legend()
+plt.title("États stationnaires dans un puits de potentiel")
+plt.xlabel("x")
+plt.ylabel("Énergie et fonction d’onde")
+plt.grid(True)
+plt.show()
